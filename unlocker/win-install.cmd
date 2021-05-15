@@ -1,16 +1,16 @@
 @echo off
 setlocal ENABLEEXTENSIONS
 echo.
-echo copy de Unlocker 3.0.2 pour installer macos sur VMware Workstation ou Player
+echo  Unlocker 2.0.1 for install MacOS on VMWare
 echo =====================================
-echo (c) Dave Parsons 2011-18
+echo (c) CodYanJS 2019-21
 echo.
 echo Set encoding parameters...
 chcp 850
 
 net session >NUL 2>&1
 if %errorlevel% neq 0 (
-    echo Attention, Lancez le en Administrateur
+    echo Warning, Launch this in Administrator Mode
     exit /b
 )
 pause
@@ -18,14 +18,14 @@ echo.
 set KeyName="HKLM\SOFTWARE\Wow6432Node\VMware, Inc.\VMware Player"
 :: delims is a TAB followed by a space
 for /F "tokens=2* delims=	 " %%A in ('REG QUERY %KeyName% /v InstallPath') do set InstallPath=%%B
-echo VMWare est installé a cette endroit: %InstallPath%
+echo VMWare is installed at : %InstallPath%
 for /F "tokens=2* delims=	 " %%A in ('REG QUERY %KeyName% /v ProductVersion') do set ProductVersion=%%B
-echo Version de VMware: %ProductVersion%
+echo VMWare Version: %ProductVersion%
 
 pushd %~dp0
 
 echo.
-echo Arret des Services VMWare...
+echo Stopping VMWare Services...
 net stop vmware-view-usbd > NUL 2>&1
 net stop VMwareHostd > NUL 2>&1
 net stop VMAuthdService > NUL 2>&1
@@ -33,7 +33,7 @@ net stop VMUSBArbService > NUL 2>&1
 taskkill /F /IM vmware-tray.exe > NUL 2>&1
 
 echo.
-echo Sauvegarde des fichiers...
+echo Saving Files ...
 rd /s /q .\backup > NUL 2>&1
 mkdir .\backup
 mkdir .\backup\x64
@@ -43,16 +43,16 @@ xcopy /F /Y "%InstallPath%x64\vmware-vmx-stats.exe" .\backup\x64
 xcopy /F /Y "%InstallPath%vmwarebase.dll" .\backup\
 
 echo.
-echo Patch en cours...
+echo Patch in progress ...
 unlocker.exe
 
 echo.
-echo Installation des outils VMWare...
+echo Install VMWare tools...
 gettools.exe
 xcopy /F /Y .\tools\darwin*.* "%InstallPath%"
 
 echo.
-echo Démarrage des services VMWare...
+echo Starting VMWare Services...
 net start VMUSBArbService > NUL 2>&1
 net start VMAuthdService > NUL 2>&1
 net start VMwareHostd > NUL 2>&1
@@ -60,4 +60,4 @@ net start vmware-view-usbd > NUL 2>&1
 
 popd
 echo.
-echo Terminé!
+echo Done!
